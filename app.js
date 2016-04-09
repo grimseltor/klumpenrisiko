@@ -27,14 +27,14 @@ var sankey = d3.sankey()
 var path = sankey.link();
 
 // load the shareholders
-d3.csv("shareholder.csv", function (error, shareholders) {
+d3.csv("actor.csv", function (error, shareholders) {
 
   // load the data (using the timelyportfolio csv method)
-  d3.csv("shareholder_relation.csv", function(error, shareholder_relation) {
+  d3.csv("actor_relation.csv", function(error, shareholder_relation) {
 
     var findShareholderById = function (shareholder_id) {
       return _.filter(shareholder_relation, function (relation) {
-        return relation.owner === shareholder_id;
+        return relation.owner_id === shareholder_id;
       });
     };
 
@@ -48,7 +48,7 @@ d3.csv("shareholder.csv", function (error, shareholders) {
       var owners = findShareholderById(shareholder.id);
 
       var response = _.map(owners, function (owner) {
-        var owner_details = findNameById(owner.owned);
+        var owner_details = findNameById(owner.owned_id);
         var a =
           {
             source: shareholder.name,
