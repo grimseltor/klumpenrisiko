@@ -123,9 +123,18 @@ shareholders <- rbind(shareholders, kw_betreiber)
 # plausibility check: are IDs still unique?
 length(unique(shareholders$id)) == 105
 
-shareholders %>% write.csv("../shareholder.csv", row.names = F)
+shareholders %>% write.csv("../actor.csv", row.names = F)
 
 # compile shareholder relations
+# mapping between kw and kw_betreiber
+kw_kw_betreiber_relations <- source_kw %>% 
+    left_join(shareholders, by = c("zentrale" = "name")) %>% 
+    select(owned_id = id, wastanummer) %>% 
+    mutate(share = 1) %>% 
+    left_join(source_kw_betreiber, by = c("wastanummer" = "fkwastanummer")) %>% 
+    select(owned_id, owner_name = name, share) %>% 
+    left_join(shareholders, by = c("owner_name" = "name")) %>% 
+    select(owned_id, owner_id = id, share)
 
 # mapping between kw_betreiber and shareholders
 # join with shareholders table to get IDs 
@@ -149,9 +158,23 @@ shareholder_shareholder_relations <- source_shareholder_shareholder %>%
     select(owned_id, owner_id = id, share)
 
 # merge
-shareholder_relation <- rbind(kw_betreiber_shareholder_relations, shareholder_shareholder_relations)
-# plausibility checks
+actor_relation <- rbind(kw_kw_betreiber_relations, kw_betreiber_shareholder_relations, shareholder_shareholder_relations)
+actor_relation %>% write.csv("../actor_relation.csv", row.names = F)
 
+rm(source_kw, source_shareholder_shareholder, source_kw_betreiber_shareholder, source_kw_betreiber)
+rm(frequencies, kw_betreiber, kw_kw_betreiber_relations, shareholder_shareholder_relations, shareholder_relation, kw_betreiber_shareholder_relations, kw)
+rm(t, tmp, tmp2, tmp3)
+actor <- shareholders
+rm(shareholders)
+# plausibility checks
+actor_relation %>% 
+    group_by(owned_id) %>% 
+    summarize(sum_share = sum(share)) %>% 
+    # filter(sum_share >= 1.01000 && sum_share <= 0.99000)
+    arrange(desc(sum_share)) %>% 
+    as.data.frame()
+# 91 and 95 are power plants, probably owned by two companies at the same - investigate further
+# 98, 97, 101, 105, 104, 103, 99, 102 need to be further investigated
 # #dummy data
 # shareholder_relation <- data.frame(owner = c(1, 2, 3, 4), owned = c(4, 4, 5, 6), share = c(0.3, 0.7, 1, 1))
 # shareholder <- data.frame(id = c(1, 2, 3, 4, 5, 6), name = c("Kanton Graubünden", "Gemeinde Zuoz", "Gemeinde S-chanf", "Axpo", "Alpiq", "KWO"), form = c("Kanton", "Gemeinde", "Gemeinde", "AG", "AG", "Kraftwerk"), power_output = c(rep(0,5), 4000))
