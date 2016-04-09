@@ -1,0 +1,19 @@
+{
+  "name": "klumpenrisiko",
+  "version": "1.0.0",
+  "description": "Find the official wiki page http://make.opendata.ch/wiki/project:klumpenrisiko",
+  "main": "sankey.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grimseltor/klumpenrisiko.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/grimseltor/klumpenrisiko/issues"
+  },
+  "homepage": "https://github.com/grimseltor/klumpenrisiko#readme"
+}
