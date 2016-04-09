@@ -120,12 +120,38 @@ kw_betreiber <- source_kw_betreiber %>%
     mutate(id = (nrow(shareholders)+1):(nrow(shareholders) + nrow(source_kw_betreiber)))
 shareholders <- rbind(shareholders, kw_betreiber)
 
-# plausibility check: is id unique?
+# plausibility check: are IDs still unique?
 length(unique(shareholders$id)) == 105
 
 shareholders %>% write.csv("../shareholder.csv", row.names = F)
 
-# 
+# compile shareholder relations
+
+# mapping between kw_betreiber and shareholders
+# join with shareholders table to get IDs 
+tmp <- source_kw_betreiber %>% 
+    left_join(shareholders, by = c("name")) %>% 
+    select(betreiber_id = id.x, shareholder_id = id.y, shareholder_name = name)
+# join with source_kw_betreiber_shareholder
+tmp2 <- source_kw_betreiber_shareholder %>% 
+    left_join(tmp, by = c("fkkwbetreiber" = "betreiber_id")) %>% 
+    select(owned_id = shareholder_id, owner_name = name, isleaf, share = anteilprozent)
+# join with shareholders table to get ID
+kw_betreiber_shareholder_relations <- tmp2 %>% 
+    left_join(shareholders, by = c("owner_name" = "name")) %>% 
+    select(owned_id, owner_id = id, share)
+
+# mapping between shareholders and shareholders
+shareholder_shareholder_relations <- source_shareholder_shareholder %>%
+    left_join(shareholders, by = c("fkkwshakeholderownedid" = "name")) %>% 
+    select(owned_id = id, nameownerid, share = anteil) %>% 
+    left_join(shareholders, by = c("nameownerid" = "name")) %>% 
+    select(owned_id, owner_id = id, share)
+
+# merge
+shareholder_relation <- rbind(kw_betreiber_shareholder_relations, shareholder_shareholder_relations)
+# plausibility checks
+
 # #dummy data
 # shareholder_relation <- data.frame(owner = c(1, 2, 3, 4), owned = c(4, 4, 5, 6), share = c(0.3, 0.7, 1, 1))
 # shareholder <- data.frame(id = c(1, 2, 3, 4, 5, 6), name = c("Kanton Graubünden", "Gemeinde Zuoz", "Gemeinde S-chanf", "Axpo", "Alpiq", "KWO"), form = c("Kanton", "Gemeinde", "Gemeinde", "AG", "AG", "Kraftwerk"), power_output = c(rep(0,5), 4000))
