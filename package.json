@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/grimseltor/klumpenrisiko#readme",
   "devDependencies": {
+    "gulp": "^3.9.1",
     "gulp-livereload": "^3.8.1"
   }
 }
