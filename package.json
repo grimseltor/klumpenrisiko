@@ -4,7 +4,8 @@
   "description": "Find the official wiki page http://make.opendata.ch/wiki/project:klumpenrisiko",
   "main": "sankey.js",
   "scripts": {
-    "postinstall": "npm install"
+    "postinstall": "npm install && ./node_modules/.bin/gulp",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
