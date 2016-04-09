@@ -1,0 +1,65 @@
+---
+title: "main.Rmd"
+author: "Timo Grossenbacher"
+date: "April 9, 2016"
+output: html_document
+---
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+setwd("/home/tgrossen/SRF/klumpenrisiko/preprocessing")
+
+knitr::opts_chunk$set(fig.width=12, fig.height=8,  warning=FALSE, message=FALSE)
+
+options(scipen = 10)
+# load necessary packages
+if(!require(dplyr)) {
+  install.packages("dplyr", repos="http://cran.us.r-project.org")
+  require(dplyr)
+}
+if(!require(tidyr)) {
+  install.packages("tidyr", repos="http://cran.us.r-project.org")
+  require(tidyr)
+}
+if(!require(ggplot2)) {
+  install.packages("ggplot2", repos="http://cran.us.r-project.org")
+  require(ggplot2)
+}
+if(!require(magrittr)) {
+  install.packages("magrittr", repos="http://cran.us.r-project.org")
+  require(magrittr)
+}
+if(!require(googlesheets)) {
+  install.packages("googlesheets", repos="http://cran.us.r-project.org")
+  require(googlesheets)
+}
+if(!require(stringr)) {
+  install.packages("stringr", repos="http://cran.us.r-project.org")
+  require(stringr)
+}
+if(!require(httr)) {
+  install.packages("httr", repos="http://cran.us.r-project.org")
+  require(httr)
+}
+# if(!require(jsonlite)) {
+#   install.packages("jsonlite", repos="http://cran.us.r-project.org")
+#   require(jsonlite)
+# }
+# if(!require(RSQLite)) {
+#   install.packages("RSQLite", repos="http://cran.us.r-project.org")
+#   require(RSQLite)
+# }
+# 
+# if(!require(lazyeval)) {
+#   install.packages("lazyeval", repos="http://cran.us.r-project.org")
+#   require(lazyeval)
+# }
+# 
+# if(!require(stringdist)) {
+#   install.packages("stringdist", repos="http://cran.us.r-project.org")
+#   require(stringdist)
+# }
+library(scales)
+```
+
+
