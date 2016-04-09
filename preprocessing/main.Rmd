@@ -62,4 +62,29 @@ if(!require(httr)) {
 library(scales)
 ```
 
+```{r}
+
+source_sheet <- gs_key("1Ua-hgSpfA4G4WiVEZW7rt39qM0cM2W3G5bAXTdSy6qs")
+
+id_map_url <- "https://docs.google.com/spreadsheets/d/1Ua-hgSpfA4G4WiVEZW7rt39qM0cM2W3G5bAXTdSy6qs/pubhtml"
+id_good <- 
+
+source_kw <- id_map_url %>%
+  googlesheets::gs_url() %>%
+  googlesheets::gs_read_listfeed(ws = "KW")
+
+source_kw_betreiber <- id_map_url %>%
+  googlesheets::gs_url() %>%
+  googlesheets::gs_read_listfeed(ws = "KW_Betreiber")
+
+source_kw_betreiber_shareholder <- id_map_url %>%
+  googlesheets::gs_url() %>%
+  googlesheets::gs_read_listfeed(ws = "KW_Betreiber_Shareholder")
+
+source_shareholder_shareholder <- id_map_url %>%
+  googlesheets::gs_url() %>%
+  googlesheets::gs_read_listfeed(ws = "Shareholder_Shareholder")
+```
+
+
 
