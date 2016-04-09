@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/grimseltor/klumpenrisiko/issues"
   },
-  "homepage": "https://github.com/grimseltor/klumpenrisiko#readme"
+  "homepage": "https://github.com/grimseltor/klumpenrisiko#readme",
+  "devDependencies": {
+    "gulp-livereload": "^3.8.1"
+  }
 }
