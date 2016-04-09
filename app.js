@@ -43,9 +43,6 @@ d3.csv("shareholder.csv", function (error, shareholders) {
         return shareholder.id === shareholder_id;
       })
     };
-
-    console.log(findShareholderById("3"));
-    console.log(findNameById("4"));
  
     var pairs = _.flatten(_.map(shareholders, function (shareholder) {
       var owners = findShareholderById(shareholder.id);
@@ -64,8 +61,6 @@ d3.csv("shareholder.csv", function (error, shareholders) {
 
       return response;
     }), false);
-
-    console.log(pairs);
 
     //set up graph in same style as original example but empty
     var graph = {"nodes" : [], "links" : []};
