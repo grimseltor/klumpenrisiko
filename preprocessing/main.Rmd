@@ -67,11 +67,11 @@ library(scales)
 source_sheet <- gs_key("1Ua-hgSpfA4G4WiVEZW7rt39qM0cM2W3G5bAXTdSy6qs")
 
 id_map_url <- "https://docs.google.com/spreadsheets/d/1Ua-hgSpfA4G4WiVEZW7rt39qM0cM2W3G5bAXTdSy6qs/pubhtml"
-id_good <- 
 
 source_kw <- id_map_url %>%
   googlesheets::gs_url() %>%
-  googlesheets::gs_read_listfeed(ws = "KW")
+#   googlesheets::gs_read(ws = "KW", range = cell_limits(c(1,NA), c(1,6)))
+    googlesheets::gs_read_listfeed(ws = "KW")
 
 source_kw_betreiber <- id_map_url %>%
   googlesheets::gs_url() %>%
@@ -84,6 +84,55 @@ source_kw_betreiber_shareholder <- id_map_url %>%
 source_shareholder_shareholder <- id_map_url %>%
   googlesheets::gs_url() %>%
   googlesheets::gs_read_listfeed(ws = "Shareholder_Shareholder")
+
+not_unique_shareholders <- c(source_kw_betreiber_shareholder$name, source_shareholder_shareholder$fkkwshakeholderownedid, source_shareholder_shareholder$nameownerid)
+
+frequencies <- as.data.frame(table(not_unique_shareholders))
+
+# create final shareholder table
+shareholders <- data.frame(id = 1:length(unique(not_unique_shareholders)), name = unique(not_unique_shareholders), form = rep(NA, length(unique(not_unique_shareholders))), power_output = rep(0, length(unique(not_unique_shareholders))))
+
+# add form
+source_kw_betreiber_shareholder %<>% distinct(rechtsform, name)
+shareholders %<>% 
+    left_join(source_kw_betreiber_shareholder, by = c("name")) %>% 
+    select(-form, -fkkwbetreiber, -isleaf, -land) %>% 
+    rename(form = rechtsform) 
+
+shareholders %<>% mutate(form = ifelse(str_detect(name, "^Gemeinde"), "Gemeinde", form))
+shareholders %<>% mutate(form = ifelse(str_detect(name, "^Kanton"), "Kanton", form))
+shareholders %<>% mutate(form = ifelse(str_detect(name, "(AG$|SA$|SE$)"), "AG", form))
+shareholders %<>% mutate(form = ifelse(str_detect(name, "(Sarl|GmbH)$"), "GmbH", form))
+shareholders %<>% mutate(form = ifelse(str_detect(name, "Staat"), "Staat", form))
+shareholders %<>% mutate(form = ifelse(is.na(form), "tbd", form))
+
+shareholders %<>% select(id, name, form, power_output)
+
+# power plants need to be added
+kw <- source_kw %>% 
+    select(name = zentrale, power_output = leistungmw, form = kwtyp) %>% 
+    mutate(id = (nrow(shareholders)+1):(nrow(shareholders) + nrow(source_kw)))
+shareholders <- rbind(shareholders, kw)
+# power plant operators need to be added
+kw_betreiber <- source_kw_betreiber %>% 
+    mutate(power_output = rep(0, nrow(source_kw_betreiber)), form = rep("Kraftwerksbetreiber", nrow(source_kw_betreiber))) %>% 
+    select(name, power_output, form) %>% 
+    mutate(id = (nrow(shareholders)+1):(nrow(shareholders) + nrow(source_kw_betreiber)))
+shareholders <- rbind(shareholders, kw_betreiber)
+
+# plausibility check: is id unique?
+length(unique(shareholders$id)) == 105
+
+shareholders %>% write.csv("../shareholder.csv", row.names = F)
+
+# 
+# #dummy data
+# shareholder_relation <- data.frame(owner = c(1, 2, 3, 4), owned = c(4, 4, 5, 6), share = c(0.3, 0.7, 1, 1))
+# shareholder <- data.frame(id = c(1, 2, 3, 4, 5, 6), name = c("Kanton Graubünden", "Gemeinde Zuoz", "Gemeinde S-chanf", "Axpo", "Alpiq", "KWO"), form = c("Kanton", "Gemeinde", "Gemeinde", "AG", "AG", "Kraftwerk"), power_output = c(rep(0,5), 4000))
+# 
+# shareholder_relation %>% write.csv("../shareholder_relation.csv", row.names = F)
+# shareholder %>% write.csv("../shareholder.csv", row.names = F)
+
 ```
 
 

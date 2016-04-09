@@ -1,7 +1,106 @@
 "id","name","form","power_output"
-1,"Kanton Graubünden","Kanton",0
-2,"Gemeinde Zuoz","Gemeinde",0
-3,"Gemeinde S-chanf","Gemeinde",0
-4,"Axpo","AG",0
-5,"Alpiq","AG",0
-6,"KWO","Kraftwerk",4000
+1,"Alpiq","AG",0
+2,"Axpo","AG",0
+3,"BKW Energie","AG",0
+4,"IWB Industrielle Werke Basel","ÖR",0
+5,"CKW","AG",0
+6,"Kanton Graubünden","Kanton",0
+7,"Gemeinde La Punt Chamues-ch","Gemeinde",0
+8,"Gemeinde Madulain","Gemeinde",0
+9,"Gemeinde S-chanf","Gemeinde",0
+10,"Gemeinde Scuol","Gemeinde",0
+11,"Gemeinde Valsot","Gemeinde",0
+12,"Gemeinde Zernez","Gemeinde",0
+13,"Gemeinde Zuoz","Gemeinde",0
+14,"Energie Wasser Bern","ÖR",0
+15,"ewz","ÖR",0
+16,"Konzessionsgemeinden","Gemeinde",0
+17,"Kanton Tessin","Kanton",0
+18,"Edison S.p.A., Milano","AG",0
+19,"Repower","AG",0
+20,"FMV (Forces Motrices Valaisannes)","AG",0
+21,"Groupe E","AG",0
+22,"EWL Kraftwerke","AG",0
+23,"Gemeinde Siders","Gemeinde",0
+24,"Gemeinde Sitten","Gemeinde",0
+25,"AEW Energie AG","AG",0
+26,"Aziende Industriali di Lugano (AIL)","tbd",0
+27,"E.ON SE","AG",0
+28,"EDF Alpes Investissement Sarl","GmbH",0
+29,"EDF Electricité de France","tbd",0
+30,"EKT Holding AG","AG",0
+31,"EKZ","tbd",0
+32,"EOS Holding SA","AG",0
+33,"IBAarau","tbd",0
+34,"Neuenburger Kantonalbank","tbd",0
+35,"REAL","tbd",0
+36,"Romande Energie","tbd",0
+37,"SAK Holding AG","AG",0
+38,"Services Industriels de Genève","tbd",0
+39,"Viteos","tbd",0
+40,"Wasserwerke Zug (WWZ)","tbd",0
+41,"Kanton Aargau","Kanton",0
+42,"EnBW","tbd",0
+43,"Elektra Birseck in Münchenstein (EBM)","tbd",0
+44,"Elektra Baselland Liestal (EBL)","tbd",0
+45,"Kanton Solothurn","Kanton",0
+46,"Streubesitz","tbd",0
+47,"Kanton Zürich","Kanton",0
+48,"Kanton Schaffhausen","Kanton",0
+49,"Kanton Glarus","Kanton",0
+50,"Kanton Zug","Kanton",0
+51,"Gemeinde Lugano","Gemeinde",0
+52,"Kanton Bern","Kanton",0
+53,"Eigene Anteile","tbd",0
+54,"Kanton Luzern","Kanton",0
+55,"BlackRock, Inc. ","tbd",0
+56,"Staat Norwegen","Staat",0
+57,"Staat Frankreich","Staat",0
+58,"Personal","tbd",0
+59,"Kanton Thurgau","Kanton",0
+60,"Gemeinde Bern","Gemeinde",0
+61,"Gemeinde Lausanne","Gemeinde",0
+62,"Gemeinde Emmen","Gemeinde",0
+63,"Gemeinde Buchrain","Gemeinde",0
+64,"Gemeinde Ebikon","Gemeinde",0
+65,"Gemeinde Root","Gemeinde",0
+66,"Gemeinde Zürich","Gemeinde",0
+67,"Kanton Wallis","Kanton",0
+68,"Kanton Freiburg","Kanton",0
+69,"Kanton Neuenburg","Kanton",0
+70,"Gemeinden im Versorgungsgebiet","Gemeinde",0
+71,"Société électrique du Val-de-Travers","tbd",0
+72,"Gemeinde Aarau","Gemeinde",0
+73,"Private Aktionäre","tbd",0
+74,"Kanton Basel","Kanton",0
+75,"Holdigaz SA, Vevey","tbd",0
+76,"Kanton Waadt","Kanton",0
+77,"Waadtländer Kantonalbank ","tbd",0
+78,"Kanton St. Gallen","Kanton",0
+79,"Kanton Appenzell Ausserrhoden","Kanton",0
+80,"Kanton Appenzell Innerrhoden","Kanton",0
+81,"Kanton Genf","Kanton",0
+82,"Gemeinde Genf","Gemeinde",0
+83,"Gemeinde Neuenburg","Gemeinde",0
+84,"Gemeinde La Chaux-de-Fonds","Gemeinde",0
+85,"Gemeinde Le Locle","Gemeinde",0
+86,"Bieudron","Speicherkraftwerk",1260
+87,"Pradella","Speicherkraftwerk",288
+88,"Innertkirchen 1","Speicherkraftwerk",240
+89,"Biasca","Speicherkraftwerk",324
+90,"Riddes","Speicherkraftwerk",225
+91,"Sils (KHR)","Speicherkraftwerk",247
+92,"Tavanasa (KVR)","Speicherkraftwerk",176
+93,"Bitsch (Biel)","Speicherkraftwerk",331
+94,"Stalden (KWM)","Speicherkraftwerk",180
+95,"Bärenburg","Speicherkraftwerk",220
+96,"Grande Dixence S.A.","Kraftwerksbetreiber",0
+97,"Engadiner Kraftwerke AG","Kraftwerksbetreiber",0
+98,"KWO","Kraftwerksbetreiber",0
+99,"Blenio Kraftwerke AG","Kraftwerksbetreiber",0
+100,"Grande Dixence SA","Kraftwerksbetreiber",0
+101,"Kraftwerke Hinterrhein AG","Kraftwerksbetreiber",0
+102,"Kraftwerke Vorderrhein AG","Kraftwerksbetreiber",0
+103,"Electra-Massa AG","Kraftwerksbetreiber",0
+104,"Kraftwerke Mattmark AG","Kraftwerksbetreiber",0
+105,"Kraftwerke Hinterrhein AG","Kraftwerksbetreiber",0
