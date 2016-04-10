@@ -93,11 +93,12 @@ frequencies <- as.data.frame(table(not_unique_shareholders))
 shareholders <- data.frame(id = 1:length(unique(not_unique_shareholders)), name = unique(not_unique_shareholders), form = rep(NA, length(unique(not_unique_shareholders))), power_output = rep(0, length(unique(not_unique_shareholders))))
 
 # add form
-source_kw_betreiber_shareholder %<>% distinct(rechtsform, name)
+# source_kw_betreiber_shareholder %<>% distinct(rechtsform, name)
 shareholders %<>% 
     left_join(source_kw_betreiber_shareholder, by = c("name")) %>% 
     select(-form, -fkkwbetreiber, -isleaf, -land) %>% 
-    rename(form = rechtsform) 
+    rename(form = rechtsform) %>% 
+    distinct(name)
 
 shareholders %<>% mutate(form = ifelse(str_detect(name, "^Gemeinde"), "Gemeinde", form))
 shareholders %<>% mutate(form = ifelse(str_detect(name, "^Kanton"), "Kanton", form))
@@ -124,9 +125,10 @@ kw_betreiber <- source_kw_betreiber %>%
     mutate(id = (nrow(shareholders)+1):(nrow(shareholders) + length(unique(source_kw_betreiber$name))))
 
 shareholders <- rbind(shareholders, kw_betreiber)
+shareholders %<>% distinct(name)
 
 # plausibility check: are IDs still unique?
-length(unique(shareholders$id)) == 105
+length(unique(shareholders$id)) == 103
 
 shareholders %>% write.csv("../actor.csv", row.names = F)
 
@@ -180,14 +182,9 @@ actor_relation %>%
     left_join(actor, by = c("owned_id" = "id")) %>% 
     select(name, form, sum_share) %>% 
     as.data.frame()
-# 91 and 95 are power plants, probably owned by two companies at the same - investigate further
-# 98, 97, 101, 105, 104, 103, 99, 102 need to be further investigated
-# #dummy data
-# shareholder_relation <- data.frame(owner = c(1, 2, 3, 4), owned = c(4, 4, 5, 6), share = c(0.3, 0.7, 1, 1))
-# shareholder <- data.frame(id = c(1, 2, 3, 4, 5, 6), name = c("Kanton Graubünden", "Gemeinde Zuoz", "Gemeinde S-chanf", "Axpo", "Alpiq", "KWO"), form = c("Kanton", "Gemeinde", "Gemeinde", "AG", "AG", "Kraftwerk"), power_output = c(rep(0,5), 4000))
-# 
-# shareholder_relation %>% write.csv("../shareholder_relation.csv", row.names = F)
-# shareholder %>% write.csv("../shareholder.csv", row.names = F)
+
+# seems to be more or less okay
+
 
 ```
 

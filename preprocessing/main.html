@@ -96,11 +96,12 @@ frequencies &lt;- as.data.frame(table(not_unique_shareholders))
 shareholders &lt;- data.frame(id = 1:length(unique(not_unique_shareholders)), name = unique(not_unique_shareholders), form = rep(NA, length(unique(not_unique_shareholders))), power_output = rep(0, length(unique(not_unique_shareholders))))
 
 # add form
-source_kw_betreiber_shareholder %&lt;&gt;% distinct(rechtsform, name)
+# source_kw_betreiber_shareholder %&lt;&gt;% distinct(rechtsform, name)
 shareholders %&lt;&gt;% 
     left_join(source_kw_betreiber_shareholder, by = c(&quot;name&quot;)) %&gt;% 
     select(-form, -fkkwbetreiber, -isleaf, -land) %&gt;% 
-    rename(form = rechtsform) 
+    rename(form = rechtsform) %&gt;% 
+    distinct(name)
 
 shareholders %&lt;&gt;% mutate(form = ifelse(str_detect(name, &quot;^Gemeinde&quot;), &quot;Gemeinde&quot;, form))
 shareholders %&lt;&gt;% mutate(form = ifelse(str_detect(name, &quot;^Kanton&quot;), &quot;Kanton&quot;, form))
@@ -112,19 +113,25 @@ shareholders %&lt;&gt;% mutate(form = ifelse(is.na(form), &quot;tbd&quot;, form)
 shareholders %&lt;&gt;% select(id, name, form, power_output)
 
 # power plants need to be added
+
 kw &lt;- source_kw %&gt;% 
     select(name = zentrale, power_output = leistungmw, form = kwtyp) %&gt;% 
+    # they should already be distinct, but lets still reassure
+    distinct(name, power_output) %&gt;%  
     mutate(id = (nrow(shareholders)+1):(nrow(shareholders) + nrow(source_kw)))
 shareholders &lt;- rbind(shareholders, kw)
 # power plant operators need to be added
 kw_betreiber &lt;- source_kw_betreiber %&gt;% 
     mutate(power_output = rep(0, nrow(source_kw_betreiber)), form = rep(&quot;Kraftwerksbetreiber&quot;, nrow(source_kw_betreiber))) %&gt;% 
+    distinct(name, form) %&gt;% 
     select(name, power_output, form) %&gt;% 
-    mutate(id = (nrow(shareholders)+1):(nrow(shareholders) + nrow(source_kw_betreiber)))
+    mutate(id = (nrow(shareholders)+1):(nrow(shareholders) + length(unique(source_kw_betreiber$name))))
+
 shareholders &lt;- rbind(shareholders, kw_betreiber)
+shareholders %&lt;&gt;% distinct(name)
 
 # plausibility check: are IDs still unique?
-length(unique(shareholders$id)) == 105</code></pre>
+length(unique(shareholders$id)) == 103</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <pre class="r"><code>shareholders %&gt;% write.csv(&quot;../actor.csv&quot;, row.names = F)
 
@@ -164,74 +171,68 @@ shareholder_shareholder_relations &lt;- source_shareholder_shareholder %&gt;%
 actor_relation &lt;- rbind(kw_kw_betreiber_relations, kw_betreiber_shareholder_relations, shareholder_shareholder_relations)
 actor_relation %&gt;% write.csv(&quot;../actor_relation.csv&quot;, row.names = F)
 
-rm(source_kw, source_shareholder_shareholder, source_kw_betreiber_shareholder, source_kw_betreiber)
-rm(frequencies, kw_betreiber, kw_kw_betreiber_relations, shareholder_shareholder_relations, shareholder_relation, kw_betreiber_shareholder_relations, kw)
-rm(t, tmp, tmp2, tmp3)
+# rm(source_kw, source_shareholder_shareholder, source_kw_betreiber_shareholder, source_kw_betreiber)
+# rm(frequencies, kw_betreiber, kw_kw_betreiber_relations, shareholder_shareholder_relations, shareholder_relation, kw_betreiber_shareholder_relations, kw)
+# rm(t, tmp, tmp2, tmp3)
 actor &lt;- shareholders
-rm(shareholders)
+# rm(shareholders)
 # plausibility checks
 actor_relation %&gt;% 
     group_by(owned_id) %&gt;% 
     summarize(sum_share = sum(share)) %&gt;% 
     # filter(sum_share &gt;= 1.01000 &amp;&amp; sum_share &lt;= 0.99000)
     arrange(desc(sum_share)) %&gt;% 
+    left_join(actor, by = c(&quot;owned_id&quot; = &quot;id&quot;)) %&gt;% 
+    select(name, form, sum_share) %&gt;% 
     as.data.frame()</code></pre>
-<pre><code>##    owned_id sum_share
-## 1        91    2.0000
-## 2        95    2.0000
-## 3         1    1.0000
-## 4         2    1.0000
-## 5         3    1.0000
-## 6         4    1.0000
-## 7         5    1.0000
-## 8        14    1.0000
-## 9        15    1.0000
-## 10       18    1.0000
-## 11       19    1.0000
-## 12       20    1.0000
-## 13       21    1.0000
-## 14       22    1.0000
-## 15       25    1.0000
-## 16       26    1.0000
-## 17       28    1.0000
-## 18       29    1.0000
-## 19       30    1.0000
-## 20       31    1.0000
-## 21       32    1.0000
-## 22       33    1.0000
-## 23       34    1.0000
-## 24       35    1.0000
-## 25       36    1.0000
-## 26       37    1.0000
-## 27       38    1.0000
-## 28       39    1.0000
-## 29       40    1.0000
-## 30       86    1.0000
-## 31       87    1.0000
-## 32       88    1.0000
-## 33       89    1.0000
-## 34       90    1.0000
-## 35       92    1.0000
-## 36       93    1.0000
-## 37       94    1.0000
-## 38       27    0.9999
-## 39       96    0.9999
-## 40       98    0.3334
-## 41       97    0.2797
-## 42      101    0.2650
-## 43      105    0.2650
-## 44      104    0.2223
-## 45      103    0.2150
-## 46       99    0.2000
-## 47      102    0.0850</code></pre>
-<pre class="r"><code># 91 and 95 are power plants, probably owned by two companies at the same - investigate further
-# 98, 97, 101, 105, 104, 103, 99, 102 need to be further investigated
-# #dummy data
-# shareholder_relation &lt;- data.frame(owner = c(1, 2, 3, 4), owned = c(4, 4, 5, 6), share = c(0.3, 0.7, 1, 1))
-# shareholder &lt;- data.frame(id = c(1, 2, 3, 4, 5, 6), name = c(&quot;Kanton Graubünden&quot;, &quot;Gemeinde Zuoz&quot;, &quot;Gemeinde S-chanf&quot;, &quot;Axpo&quot;, &quot;Alpiq&quot;, &quot;KWO&quot;), form = c(&quot;Kanton&quot;, &quot;Gemeinde&quot;, &quot;Gemeinde&quot;, &quot;AG&quot;, &quot;AG&quot;, &quot;Kraftwerk&quot;), power_output = c(rep(0,5), 4000))
-# 
-# shareholder_relation %&gt;% write.csv(&quot;../shareholder_relation.csv&quot;, row.names = F)
-# shareholder %&gt;% write.csv(&quot;../shareholder.csv&quot;, row.names = F)</code></pre>
+<pre><code>##                                   name                form sum_share
+## 1                                  KWO Kraftwerksbetreiber    1.0001
+## 2                                Alpiq                  AG    1.0000
+## 3                                 Axpo                  AG    1.0000
+## 4                          BKW Energie                  AG    1.0000
+## 5         IWB Industrielle Werke Basel                  ÖR    1.0000
+## 6                                  CKW                  AG    1.0000
+## 7                  Energie Wasser Bern                  ÖR    1.0000
+## 8                                  ewz                  ÖR    1.0000
+## 9                Edison S.p.A., Milano                  AG    1.0000
+## 10                             Repower                  AG    1.0000
+## 11   FMV (Forces Motrices Valaisannes)                  AG    1.0000
+## 12                            Groupe E                  AG    1.0000
+## 13                      EWL Kraftwerke                  AG    1.0000
+## 14                      AEW Energie AG                  AG    1.0000
+## 15 Aziende Industriali di Lugano (AIL)                 tbd    1.0000
+## 16       EDF Alpes Investissement Sarl                GmbH    1.0000
+## 17           EDF Electricité de France                 tbd    1.0000
+## 18                      EKT Holding AG                  AG    1.0000
+## 19                                 EKZ                 tbd    1.0000
+## 20                      EOS Holding SA                  AG    1.0000
+## 21                             IBAarau                 tbd    1.0000
+## 22            Neuenburger Kantonalbank                 tbd    1.0000
+## 23                                REAL                 tbd    1.0000
+## 24                     Romande Energie                 tbd    1.0000
+## 25                      SAK Holding AG                  AG    1.0000
+## 26      Services Industriels de Genève                 tbd    1.0000
+## 27                              Viteos                 tbd    1.0000
+## 28               Wasserwerke Zug (WWZ)                 tbd    1.0000
+## 29                            Bieudron   Speicherkraftwerk    1.0000
+## 30                            Pradella   Speicherkraftwerk    1.0000
+## 31                     Innertkirchen 1   Speicherkraftwerk    1.0000
+## 32                              Biasca   Speicherkraftwerk    1.0000
+## 33                              Riddes   Speicherkraftwerk    1.0000
+## 34                          Sils (KHR)   Speicherkraftwerk    1.0000
+## 35                      Tavanasa (KVR)   Speicherkraftwerk    1.0000
+## 36                       Bitsch (Biel)   Speicherkraftwerk    1.0000
+## 37                       Stalden (KWM)   Speicherkraftwerk    1.0000
+## 38                           Bärenburg   Speicherkraftwerk    1.0000
+## 39                Blenio Kraftwerke AG Kraftwerksbetreiber    1.0000
+## 40           Kraftwerke Hinterrhein AG Kraftwerksbetreiber    1.0000
+## 41           Kraftwerke Vorderrhein AG Kraftwerksbetreiber    1.0000
+## 42                    Electra-Massa AG Kraftwerksbetreiber    1.0000
+## 43                             E.ON SE                  AG    0.9999
+## 44                   Grande Dixence SA Kraftwerksbetreiber    0.9999
+## 45             Engadiner Kraftwerke AG Kraftwerksbetreiber    0.9997
+## 46              Kraftwerke Mattmark AG Kraftwerksbetreiber    0.9992</code></pre>
+<pre class="r"><code># seems to be more or less okay</code></pre>
 
 
 </div>
