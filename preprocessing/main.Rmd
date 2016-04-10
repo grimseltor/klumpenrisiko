@@ -109,15 +109,20 @@ shareholders %<>% mutate(form = ifelse(is.na(form), "tbd", form))
 shareholders %<>% select(id, name, form, power_output)
 
 # power plants need to be added
+
 kw <- source_kw %>% 
     select(name = zentrale, power_output = leistungmw, form = kwtyp) %>% 
+    # they should already be distinct, but lets still reassure
+    distinct(name, power_output) %>%  
     mutate(id = (nrow(shareholders)+1):(nrow(shareholders) + nrow(source_kw)))
 shareholders <- rbind(shareholders, kw)
 # power plant operators need to be added
 kw_betreiber <- source_kw_betreiber %>% 
     mutate(power_output = rep(0, nrow(source_kw_betreiber)), form = rep("Kraftwerksbetreiber", nrow(source_kw_betreiber))) %>% 
+    distinct(name, form) %>% 
     select(name, power_output, form) %>% 
-    mutate(id = (nrow(shareholders)+1):(nrow(shareholders) + nrow(source_kw_betreiber)))
+    mutate(id = (nrow(shareholders)+1):(nrow(shareholders) + length(unique(source_kw_betreiber$name))))
+
 shareholders <- rbind(shareholders, kw_betreiber)
 
 # plausibility check: are IDs still unique?
@@ -161,17 +166,19 @@ shareholder_shareholder_relations <- source_shareholder_shareholder %>%
 actor_relation <- rbind(kw_kw_betreiber_relations, kw_betreiber_shareholder_relations, shareholder_shareholder_relations)
 actor_relation %>% write.csv("../actor_relation.csv", row.names = F)
 
-rm(source_kw, source_shareholder_shareholder, source_kw_betreiber_shareholder, source_kw_betreiber)
-rm(frequencies, kw_betreiber, kw_kw_betreiber_relations, shareholder_shareholder_relations, shareholder_relation, kw_betreiber_shareholder_relations, kw)
-rm(t, tmp, tmp2, tmp3)
+# rm(source_kw, source_shareholder_shareholder, source_kw_betreiber_shareholder, source_kw_betreiber)
+# rm(frequencies, kw_betreiber, kw_kw_betreiber_relations, shareholder_shareholder_relations, shareholder_relation, kw_betreiber_shareholder_relations, kw)
+# rm(t, tmp, tmp2, tmp3)
 actor <- shareholders
-rm(shareholders)
+# rm(shareholders)
 # plausibility checks
 actor_relation %>% 
     group_by(owned_id) %>% 
     summarize(sum_share = sum(share)) %>% 
     # filter(sum_share >= 1.01000 && sum_share <= 0.99000)
     arrange(desc(sum_share)) %>% 
+    left_join(actor, by = c("owned_id" = "id")) %>% 
+    select(name, form, sum_share) %>% 
     as.data.frame()
 # 91 and 95 are power plants, probably owned by two companies at the same - investigate further
 # 98, 97, 101, 105, 104, 103, 99, 102 need to be further investigated
